@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Random;
+
 import pacman.controllers.Controller;
 import pacman.controllers.HumanController;
 import pacman.controllers.KeyBoardInput;
@@ -22,10 +23,9 @@ import pacman.controllers.examples.RandomNonRevPacMan;
 import pacman.controllers.examples.RandomPacMan;
 import pacman.controllers.examples.StarterGhosts;
 import pacman.controllers.examples.StarterPacMan;
-import pacman.entries.pacman.MyPacMan;
+import pacman.entries.pacman.DecisionTreePac;
 import pacman.game.Game;
 import pacman.game.GameView;
-
 import static pacman.game.Constants.*;
 
 /**
@@ -46,11 +46,11 @@ public class Executor
 	{
 		Executor exec=new Executor();
 
-		/*
+		///*
 		//run multiple games in batch mode - good for testing.
 		int numTrials=10;
-		exec.runExperiment(new RandomPacMan(),new RandomGhosts(),numTrials);
-		 */
+		exec.runExperiment(new DecisionTreePac(),new StarterGhosts(),numTrials);
+		 //*/
 		
 		/*
 		//run a game in synchronous mode: game waits until controllers respond.
@@ -61,9 +61,9 @@ public class Executor
 		
 		///*
 		//run the game in asynchronous mode.
-		boolean visual=true;
+//		boolean visual=true;
 //		exec.runGameTimed(new NearestPillPacMan(),new AggressiveGhosts(),visual);
-		exec.runGameTimed(new MyPacMan(),new StarterGhosts(),visual);
+//		exec.runGameTimed(new DecisionTreePac(),new StarterGhosts(),visual);
 //		exec.runGameTimed(new HumanController(new KeyBoardInput()),new StarterGhosts(),visual);	
 		//*/
 		
