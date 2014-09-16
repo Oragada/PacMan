@@ -84,6 +84,29 @@ public class Executor
 		 */
 	}
 	
+	public double runSampling(Controller<MOVE> pacManController,Controller<EnumMap<GHOST,MOVE>> ghostController,int trials)
+    {
+    	double avgScore=0;
+    	
+    	Random rnd=new Random(0);
+		Game game;
+		
+		for(int i=0;i<trials;i++)
+		{
+			game=new Game(rnd.nextLong());
+			
+			while(!game.gameOver())
+			{
+		        game.advanceGame(pacManController.getMove(game.copy(),System.currentTimeMillis()+DELAY),
+		        		ghostController.getMove(game.copy(),System.currentTimeMillis()+DELAY));
+			}
+			
+			avgScore+=game.getScore();
+		}
+		
+		return (avgScore/trials);
+    }
+	
     /**
      * For running multiple games without visuals. This is useful to get a good idea of how well a controller plays
      * against a chosen opponent: the random nature of the game means that performance can vary from game to game. 
