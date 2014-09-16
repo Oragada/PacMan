@@ -1,6 +1,8 @@
 package pacman.ai_structures.evolution;
 
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Random;        // for generating random numbers
 import java.util.ArrayList;     // arrayLists are more versatile than arrays
 
@@ -21,7 +23,7 @@ import pacman.entries.pacman.EvolvedDecisionTree;
 public class GeneticAlgorithm {
     // --- constants
     static int CHROMOSOME_SIZE=3;
-    static int POPULATION_SIZE=500;
+    static int POPULATION_SIZE=100;
 
     // --- variables:
 
@@ -30,6 +32,10 @@ public class GeneticAlgorithm {
      * a simple array is due to extra functionalities of the arrayList, such as sorting)
      */
     ArrayList<Gene> mPopulation;
+    Random rand;
+    
+    int optimalFitness;
+    int maxGeneration;
 
     // --- functions:
 
@@ -45,6 +51,12 @@ public class GeneticAlgorithm {
             entry.randomizeChromosome();
             mPopulation.add(entry);
         }
+        
+        rand = new Random();
+        
+        optimalFitness = Integer.MAX_VALUE;
+        maxGeneration = 25;
+        
     }
     /**
      * For all members of the population, runs a heuristic that evaluates their fitness
@@ -70,6 +82,38 @@ public class GeneticAlgorithm {
      */
     public void produceNextGeneration(){
         // use one of the offspring techniques suggested in class (also applying any mutations) HERE
+    	mPopulation.sort(new Comparator<Gene>(){public int compare(Gene x, Gene y){return  (int) (x.mFitness - y.mFitness);}});
+    	List<Gene> breeders = mPopulation.subList((int)(mPopulation.size()/2), mPopulation.size());
+    	int pairings = (int)(this.POPULATION_SIZE/2/2);
+    	ArrayList<Gene> totalOffspring = new ArrayList<Gene>();
+    	for(int i = 0; i<pairings; i++){
+    		//get two random breeders
+    		int momIndex = rand.nextInt(breeders.size());
+    		int dadIndex = momIndex;
+    		while(dadIndex == momIndex){
+    			dadIndex = rand.nextInt(breeders.size());
+    		}
+    		Gene mom = breeders.get(momIndex);
+    		Gene dad = breeders.get(dadIndex);
+    		
+    		//combine and produce new Genotypes
+    		Gene[] offspring = dad.reproduce(mom);
+    		
+    		//decide whether mutation happens
+    		if(rand.nextInt(10) >= 7){
+    			offspring[0].mutate();
+    		}
+    		if(rand.nextInt(10) >= 7){
+    			offspring[1].mutate();
+    		}
+    		totalOffspring.add(offspring[0]);
+    		totalOffspring.add(offspring[1]);
+    	}
+    	//cast away non-breeders
+    	//create new population of breeders and offspring
+    	mPopulation = new ArrayList<Gene>();
+    	mPopulation.addAll(breeders);
+    	mPopulation.addAll(totalOffspring);
     	
     	
     }
@@ -85,6 +129,7 @@ public class GeneticAlgorithm {
      * @return the Gene at position <b>index</b> of the mPopulation arrayList
      */
     public Gene getGene(int index){ return mPopulation.get(index); }
+
 
     // Genetic Algorithm maxA testing method
     public static void main( String[] args ){
@@ -103,13 +148,13 @@ public class GeneticAlgorithm {
             // we choose to print the average fitness,
             // as well as the maximum and minimum fitness
             // as part of our progress monitoring
-            float avgFitness=0.f;
-            float minFitness=Float.POSITIVE_INFINITY;
-            float maxFitness=Float.NEGATIVE_INFINITY;
+            double avgFitness=0.0;
+            double minFitness=Double.POSITIVE_INFINITY;
+            double maxFitness=Double.NEGATIVE_INFINITY;
             String bestIndividual="";
-		String worstIndividual="";
+            String worstIndividual="";
             for(int i = 0; i < population.size(); i++){
-                float currFitness = population.getGene(i).getFitness();
+                double currFitness = population.getGene(i).getFitness();
                 avgFitness += currFitness;
                 if(currFitness < minFitness){
                     minFitness = currFitness;
@@ -129,7 +174,11 @@ public class GeneticAlgorithm {
             // produce next generation:
             population.produceNextGeneration();
             generationCount++;
+            if(population.optimalFitness == maxFitness | generationCount > population.maxGeneration){
+            	System.out.println("Best individual: " + bestIndividual);
+            	break;
+            }
         }
     }
-};
+}
 

@@ -14,13 +14,15 @@ public class Gene {
      * this is not necessary: the only constraint is that a better solution
      * must have a strictly higher fitness than a worse solution
      */
-    protected float mFitness;
+    protected double mFitness;
     /**
      * The chromosome contains only integers 0 or 1 (we choose to avoid
      * using a boolean type to make computations easier)
      */
     protected int mChromosome[];
 
+    private Random rand;
+    
     // --- functions:
     /**
      * Allocates memory for the mChromosome array and initializes any other data, such as fitness
@@ -28,19 +30,19 @@ public class Gene {
      * passed as a variable in the constructor
      */
     Gene() {
+    	rand = new Random();
         // allocating memory for the chromosome array
         mChromosome = new int[GeneticAlgorithm.CHROMOSOME_SIZE];
         // initializing fitness
-        mFitness = 0.f;
+        mFitness = 0.0;
     }
 
     /**
      * Randomizes the numbers on the mChromosome array to values 0 or 1
      */
     public void randomizeChromosome(){
-        Random rnd = new Random();
-        for(int n : mChromosome){
-        	n = rnd.nextInt(100);
+        for(int i = 0; i < mChromosome.length; i++){
+        	mChromosome[i] = rand.nextInt(100);
         }
         
     }
@@ -57,7 +59,15 @@ public class Gene {
      */
     public Gene[] reproduce(Gene other){
         Gene[] result = new Gene[2];
-        // initilization of offspring chromosome goes HERE
+        
+        for(int n = 0; n < 2; n++){
+        	result[n] = new Gene();
+            for(int i = 0; i < getChromosomeSize(); i++){
+            	//takes each value from either parent
+                int variance = rand.nextInt(getChromosomeSize());
+            	result[n].setChromosomeElement(i, (variance != 0 ? this.getChromosomeElement(i) : other.getChromosomeElement(i)));
+            }
+        }
         return result;
     }
 
@@ -69,16 +79,19 @@ public class Gene {
      * or (more often) on a gene which will not produce any offspring afterwards.
      */
     public void mutate(){
+    	for(int i = 0; i < getChromosomeSize();i++){
+    		mChromosome[i] = getChromosomeSize() + rand.nextInt(10)-5;
+    	}
     }
     /**
      * Sets the fitness, after it is evaluated in the GeneticAlgorithm class.
      * @param value: the fitness value to be set
      */
-    public void setFitness(float value) { mFitness = value; }
+    public void setFitness(double value) { mFitness = value; }
     /**
      * @return the gene's fitness value
      */
-    public float getFitness() { return mFitness; }
+    public double getFitness() { return mFitness; }
     /**
      * Returns the element at position <b>index</b> of the mChromosome array
      * @param index: the position on the array of the element we want to access
