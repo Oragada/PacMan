@@ -1,5 +1,15 @@
 package pacman.ai_structures.behaviour_tree;
 
-public class EnemyInRange {
+import pacman.ai_structures.behaviour_tree.abst.Leaf;
+import pacman.ai_structures.behaviour_tree.abst.RangeFinderLeaf;
+import pacman.game.Game;
+
+public class EnemyInRange extends RangeFinderLeaf {
+
+	@Override
+	public boolean Execute(BTreeGame game) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 }
