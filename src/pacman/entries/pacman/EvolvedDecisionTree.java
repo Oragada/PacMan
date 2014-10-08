@@ -2,6 +2,7 @@ package pacman.entries.pacman;
 
 import java.util.ArrayList;
 
+import pacman.ai_structures.data_management.DirectionDetect;
 import pacman.controllers.Controller;
 import pacman.game.Game;
 import pacman.game.Constants.DM;
@@ -49,6 +50,7 @@ public class EvolvedDecisionTree extends Controller<MOVE>
 				//System.out.println("Eat");
 			}
 		}
+		System.out.println(DirectionDetect.getDirDetect(game).toString());
 		
 		return myMove;
 	}

@@ -1,4 +1,4 @@
-package dataRecording;
+package pacman.ai_structures.dataRecording;
 
 import pacman.game.Constants;
 import pacman.game.Constants.DM;

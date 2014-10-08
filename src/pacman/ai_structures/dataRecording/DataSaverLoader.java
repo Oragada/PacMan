@@ -1,4 +1,4 @@
-package dataRecording;
+package pacman.ai_structures.dataRecording;
 
 import pacman.game.util.*;
 
