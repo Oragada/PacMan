@@ -6,7 +6,7 @@ import java.util.Random;
 public class Neural {
 	
 	public static Random RAND = new Random(); 
-	public static double LEARN = 0.05;
+	public static double LEARN = 0.1;
 	
 	boolean keepRunning = true;
 	
@@ -15,14 +15,30 @@ public class Neural {
 	ArrayList<Node> output;
 	ArrayList<Connection> connections;
 	
-	void RunNeural(ArrayList<DataPoint> dataset, int hiddenN, int out){
+	public static void main(String[] args){
+		ArrayList<NDataPoint> xor = new ArrayList<NDataPoint>();
+		xor.add(new NDataPoint(new double[]{0.0,0.0}, new int[]{0}));
+		xor.add(new NDataPoint(new double[]{1.0,0.0}, new int[]{1}));
+		xor.add(new NDataPoint(new double[]{0.0,1.0}, new int[]{1}));
+		xor.add(new NDataPoint(new double[]{1.0,1.0}, new int[]{0}));
+		
+		Neural n = new Neural();
+		n.RunNeural(xor, 2);
+	}
+	
+	void RunNeural(ArrayList<NDataPoint> dataset, int hiddenN){
 		
 //		 * (1) 	Initialize all weights and biases in network;
-		InitializeNetwork(dataset.size(), hiddenN, out);
+		InitializeNetwork(dataset, hiddenN);
+		//Count the number of tuples we have been through
+		int t = 0;
 //		 * (2) 	while terminating condition is not satisfied
 		while(keepRunning){
+			t++;
+			//LEARN = 1.0/t;
+			System.out.println("LEARN: " + LEARN + " - T: " + t);
 //		 	 * (3) 	for each training tuple X in D
-			for(DataPoint x : dataset){
+			for(NDataPoint x : dataset){
 //		 		 * (4) 	// Propagate the inputs forward:
 //		 		 * (5) 	for each input layer unit j
 				for(int j = 0; j < input.size(); j++){
@@ -38,6 +54,16 @@ public class Neural {
 				for(int j = 0; j<output.size(); j++){
 					output.get(j).activate();
 				}
+				
+				//Check whether its working
+				CheckOutput(x);
+				
+				
+				//End running
+				System.out.println("Still Running");
+				//Print output
+				PrintOutput(x);
+				
 //				 * (10) // Backpropagate the errors:
 //				 * (11) for each unit j in the output layer
 				for(int j = 0; j<output.size(); j++){
@@ -65,13 +91,38 @@ public class Neural {
 					n.UpdateBias();
 				}
 			}
+			
 		}
 	}
 
-	private void InitializeNetwork(int in, int hiddenN, int out) {
+	private boolean CheckOutput(NDataPoint x) {
+		boolean doesItHoldUp = true;
+		for(int i = 0; i<output.size();i++){
+			double target = (double) x.getTargetOutput(i);
+			double actual = Math.round(output.get(i).GetOutput());
+			boolean thisOne = true;
+			if(Math.abs(target - actual) > 0.001){
+				thisOne = false;
+				doesItHoldUp = doesItHoldUp && thisOne;
+			}
+		}
+		
+		
+		return doesItHoldUp;
+	}
+
+	private void PrintOutput(NDataPoint expected) {
+		for(int i = 0; i<output.size();i++){
+			System.out.print("Expected: " + expected.getTargetOutput(i));
+			System.out.println(" - Output: " + output.get(i).output);
+		}
+		
+	}
+
+	private void InitializeNetwork(ArrayList<NDataPoint> dataset, int hiddenN) {
 		//Generate input layer
 		input = new ArrayList<Node>();
-		for(int i = 0; i<in; i++){
+		for(int i = 0; i<dataset.get(0).input.length; i++){
 			input.add(new Node());
 		}
 		//Generate hidden layer
@@ -81,7 +132,7 @@ public class Neural {
 		}
 		//Generate output layer
 		output = new ArrayList<Node>();
-		for(int i = 0; i<out; i++){
+		for(int i = 0; i<dataset.get(0).output.length; i++){
 			output.add(new Node());
 		}
 		//Generate connections

@@ -27,7 +27,7 @@ public class Node {
 		double summedValue = 0.0;
 		for(Connection c : feedingTube){
 			Node otherN = c.getOtherEnd(this);
-			summedValue = otherN.GetOutput()*c.weight;
+			summedValue += otherN.GetOutput()*c.weight;
 		}
 		summedValue += bias;
 //		 * (9) 	apply activation function to result; // compute the output of each unit j
@@ -69,7 +69,7 @@ public class Node {
 		double totalE = 0;
 		for (Connection c : garbageTube){
 			Node otherN = c.getOtherEnd(this);
-			totalE = otherN.GetError()*c.weight;
+			totalE += otherN.GetError()*c.weight;
 		}
 		return totalE;
 	}

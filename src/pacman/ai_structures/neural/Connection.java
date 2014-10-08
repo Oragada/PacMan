@@ -9,6 +9,7 @@ public class Connection {
 	public Connection(Node mouth, Node bottom){
 		this.mouth = mouth;
 		this.bottom = bottom;
+		initialize(mouth, bottom);
 	}
 	
 	Node getOtherEnd(Node node){
@@ -17,7 +18,7 @@ public class Connection {
 		return null;
 	}
 	
-	void initialize(Node m, Node b, double w){
+	void initialize(Node m, Node b){
 		mouth = m;
 		bottom = b;
 		weight = (Neural.RAND.nextDouble()*2)-1; //Random weight between -1 and 1
