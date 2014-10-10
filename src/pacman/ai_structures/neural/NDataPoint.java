@@ -9,7 +9,6 @@ public class NDataPoint {
 	public NDataPoint(double[] inputData, int[] outputData) {
 		output = outputData;
 		input = inputData;
-		// TODO Auto-generated constructor stub
 	}
 
 	public double getInput(int j) {
