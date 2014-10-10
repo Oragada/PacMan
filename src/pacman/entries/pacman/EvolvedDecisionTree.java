@@ -50,7 +50,7 @@ public class EvolvedDecisionTree extends Controller<MOVE>
 				//System.out.println("Eat");
 			}
 		}
-		System.out.println(DirectionDetect.getDirDetect(game).toString());
+		System.out.println(DirectionDetect.getDirDetect(game, myMove).toString());
 		
 		return myMove;
 	}

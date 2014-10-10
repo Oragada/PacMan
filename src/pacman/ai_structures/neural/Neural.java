@@ -3,6 +3,8 @@ package pacman.ai_structures.neural;
 import java.util.ArrayList;
 import java.util.Random;
 
+import pacman.ai_structures.data_management.DirectionDetect;
+
 public class Neural {
 	
 	public static Random RAND = new Random(); 
@@ -23,10 +25,10 @@ public class Neural {
 		xor.add(new NDataPoint(new double[]{1.0,1.0}, new int[]{0}));
 		
 		Neural n = new Neural();
-		n.RunNeural(xor, 2);
+		n.TrainNeural(xor, 2);
 	}
 	
-	void RunNeural(ArrayList<NDataPoint> dataset, int hiddenN){
+	void TrainNeural(ArrayList<NDataPoint> dataset, int hiddenN){
 		
 //		 * (1) 	Initialize all weights and biases in network;
 		InitializeNetwork(dataset, hiddenN);
@@ -35,6 +37,8 @@ public class Neural {
 //		 * (2) 	while terminating condition is not satisfied
 		while(keepRunning){
 			t++;
+			double accMax = 0;
+			double accActual = 0;
 			//LEARN = 1.0/t;
 			System.out.println("LEARN: " + LEARN + " - T: " + t);
 //		 	 * (3) 	for each training tuple X in D
@@ -56,13 +60,15 @@ public class Neural {
 				}
 				
 				//Check whether its working
-				CheckOutput(x);
+				if(CheckOutputPac(x)){
+					accActual++;
+				}
+				accMax++;
 				
 				
-				//End running
-				System.out.println("Still Running");
+				//System.out.println("Still Running");
 				//Print output
-				PrintOutput(x);
+				//PrintOutput(x);
 				
 //				 * (10) // Backpropagate the errors:
 //				 * (11) for each unit j in the output layer
@@ -91,6 +97,11 @@ public class Neural {
 					n.UpdateBias();
 				}
 			}
+
+			//End running
+			
+			System.out.println("Accuracy: " + accActual/accMax);
+			if(t > 250) break;
 			
 		}
 	}
@@ -109,6 +120,22 @@ public class Neural {
 		
 		
 		return doesItHoldUp;
+	}
+	
+	private boolean CheckOutputPac(NDataPoint x){
+
+		int highest = -1;
+		double highVal = 0.0;
+		int targetVal = -1;
+		for(int i = 0; i<output.size();i++){
+			if(x.getTargetOutput(i) == 1) targetVal = i;
+			if(highVal < output.get(i).GetOutput()){
+				highVal = output.get(i).GetOutput();
+				highest = i;
+			}
+		}
+		return highest == targetVal;
+		
 	}
 
 	private void PrintOutput(NDataPoint expected) {
@@ -154,5 +181,31 @@ public class Neural {
 			}
 		}
 		
+	}
+
+	public double[] sample(NDataPoint x) {
+//		 * (4) 	// Propagate the inputs forward:
+//		 * (5) 	for each input layer unit j
+		for(int j = 0; j < input.size(); j++){
+//			 * (6) 	Oj = Ij; // output of an input unit is its actual input value
+			input.get(j).Input(x.getInput(j));
+		}
+//		 * (7) 	for each hidden or output layer unit j
+		for(int j = 0; j< hidden.size(); j++){
+//		 * (8) 	sum of weighted input + bias; //compute the net input of unit j with respect to the previous layer, i
+//		 * (9) 	apply activation function to result; // compute the output of each unit j
+			hidden.get(j).activate();
+		}
+		for(int j = 0; j<output.size(); j++){
+			output.get(j).activate();
+		}
+		
+		double[] returnArr = new double[output.size()];
+		for(int j = 0; j<returnArr.length;j++){
+			returnArr[j] = output.get(j).output;
+		}
+		
+		return returnArr;
+					
 	}
 }

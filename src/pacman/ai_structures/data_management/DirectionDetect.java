@@ -10,10 +10,14 @@ import pacman.ai_structures.data_management.*;
 
 public class DirectionDetect {
 	
-	HashMap<MOVE, Integer> enemies;
-	HashMap<MOVE, Integer> prey;
-	HashMap<MOVE, Integer> pellets;
-	HashMap<MOVE, Integer> sPellets;
+	
+	public static final int MAX = 1000;
+	public HashMap<MOVE, Integer> enemies;
+	public HashMap<MOVE, Integer> prey;
+	public HashMap<MOVE, Integer> pellets;
+	public HashMap<MOVE, Integer> sPellets;
+	
+	public MOVE chosenMove;
 	
 	
 	private DirectionDetect(){
@@ -23,8 +27,15 @@ public class DirectionDetect {
 		sPellets = new HashMap<MOVE, Integer>();
 	}
 	
-	public static DirectionDetect getDirDetect(Game game){
+	public static DirectionDetect getDirDetect(Game game, MOVE move){
 		DirectionDetect d = new DirectionDetect();
+		if(move == MOVE.NEUTRAL)
+		{
+			move = game.getPacmanLastMoveMade();
+		}
+		d.chosenMove = move;
+		
+		
 		int pacPos = game.getPacmanCurrentNodeIndex();
 		MOVE[] m = game.getPossibleMoves(pacPos);
 		//boolean junc = game.isJunction(pacPos);
@@ -86,8 +97,10 @@ public class DirectionDetect {
 	}
 	
 	public static DirectionDetect recrtDD(String dString){
-		String[] dataPoints = dString.split(";");
 		DirectionDetect newDD = new DirectionDetect();
+		String[] kv = dString.split(":");
+		String[] dataPoints = kv[0].split(";");
+		newDD.chosenMove = GetMove(kv[1]);
 		newDD.pellets.put(MOVE.UP, Integer.parseInt(dataPoints[0]));
 		newDD.pellets.put(MOVE.DOWN, Integer.parseInt(dataPoints[1]));
 		newDD.pellets.put(MOVE.LEFT, Integer.parseInt(dataPoints[2]));
@@ -109,7 +122,7 @@ public class DirectionDetect {
 	}
 	
 	private static int Cap(int val) {
-		if(val > 100 ) return 100;
+		if(val > MAX ) return MAX;
 		return val;
 	}
 
@@ -141,11 +154,34 @@ public class DirectionDetect {
 		strB.append(GetDist(DISTTYPE.PREY,MOVE.DOWN)+";");
 		strB.append(GetDist(DISTTYPE.PREY,MOVE.LEFT)+";");
 		strB.append(GetDist(DISTTYPE.PREY,MOVE.RIGHT));
-		strB.append("\n");
+		strB.append(":"+GetMove(chosenMove));
 		
 		return strB.toString();
 	}
 	
+	private String GetMove(MOVE cMove) {
+		switch (cMove){
+		case UP:
+			return "U";
+		case DOWN:
+			return "D";
+		case LEFT:
+			return "L";
+		case RIGHT:
+			return "R";
+		default:
+			return "N";
+		}
+	}
+	
+	private static MOVE GetMove(String sMove){
+		if(sMove.equals("U")) return MOVE.UP;
+		if(sMove.equals("D")) return MOVE.DOWN;
+		if(sMove.equals("L")) return MOVE.LEFT;
+		if(sMove.equals("R")) return MOVE.RIGHT;
+		return MOVE.NEUTRAL;
+	}
+
 	public String toString(){
 		StringBuilder strB = new StringBuilder();
 
@@ -173,6 +209,8 @@ public class DirectionDetect {
 		strB.append("L:"+GetDist(DISTTYPE.PREY,MOVE.LEFT)+";  ");
 		strB.append("R:"+GetDist(DISTTYPE.PREY,MOVE.RIGHT)+"");
 		strB.append("\n");
+		strB.append("MOVE: " + chosenMove);
+		strB.append("\n");
 		
 		return strB.toString();
 	}
@@ -181,26 +219,26 @@ public class DirectionDetect {
 		switch (dt){
 			case PELLET:
 				if(!pellets.containsKey(dir)){
-					return 100;
+					return MAX;
 				}
 				return pellets.get(dir);
 		case SPELLET:
 				if(!sPellets.containsKey(dir)){
-					return 100;
+					return MAX;
 				}
 				return sPellets.get(dir);
 			case ENEMY:
 				if(!enemies.containsKey(dir)){
-					return 100;
+					return MAX;
 				}
 				return enemies.get(dir);
 			case PREY:
 				if(!prey.containsKey(dir)){
-					return 100;
+					return MAX;
 				}
 				return prey.get(dir);
 			default:
-				return 100;
+				return MAX;
 				
 		}
 			
