@@ -8,7 +8,7 @@ import pacman.ai_structures.data_management.dir_detect.DirectionDetect;
 public class Neural {
 	
 	public static Random RAND = new Random(); 
-	public static double LEARN = 0.1;
+	private double LEARN;
 	
 	boolean keepRunning = true;
 	
@@ -17,7 +17,11 @@ public class Neural {
 	ArrayList<Node> output;
 	ArrayList<Connection> connections;
 	
-	public static void main(String[] args){
+	public Neural(double l){
+		SetLEARN(l);
+	}
+	
+	/*public static void main(String[] args){
 		ArrayList<NDataPoint> xor = new ArrayList<NDataPoint>();
 		xor.add(new NDataPoint(new double[]{0.0,0.0}, new int[]{0}));
 		xor.add(new NDataPoint(new double[]{1.0,0.0}, new int[]{1}));
@@ -26,7 +30,7 @@ public class Neural {
 		
 		Neural n = new Neural();
 		n.TrainNeural(xor, 2);
-	}
+	}*/
 	
 	void TrainNeural(ArrayList<NDataPoint> dataset, int hiddenN){
 		
@@ -37,10 +41,10 @@ public class Neural {
 //		 * (2) 	while terminating condition is not satisfied
 		while(keepRunning){
 			t++;
-			double accMax = 0;
-			double accActual = 0;
+			double accMax = 0.0;
+			double accActual = 0.0;
 			//LEARN = 1.0/t;
-			System.out.println("LEARN: " + LEARN + " - T: " + t);
+			//System.out.println("LEARN: " + LEARN + " - T: " + t);
 //		 	 * (3) 	for each training tuple X in D
 			for(NDataPoint x : dataset){
 //		 		 * (4) 	// Propagate the inputs forward:
@@ -60,9 +64,10 @@ public class Neural {
 				}
 				
 				//Check whether its working
-				if(CheckOutputPac(x)){
-					accActual++;
-				}
+				//if(CheckOutputPac(x)){ //USE FOR DD
+				//	accActual++;
+				//}
+				accActual += Math.abs(1-output.get(0).output-x.getTargetOutput(0));//USE FOR WD
 				accMax++;
 				
 				
@@ -85,26 +90,33 @@ public class Neural {
 				for(Connection c : connections){
 //					 * (16) Delta-wij = (learn)*ErrorJ*Oi; // weight increment
 //					 * (17) wij = wij + Delta-wij ; // weight update
-					c.UpdateWeight();
+					c.UpdateWeight(LEARN);
 				}
 //				 * (18) for each bias BiasJ in network
 				for(Node n : output){
 //					 * (19) DeltaBiasJ = (learn)*ErrorJ ; // bias increment
 //					 * (20) BiasJ = BiasJ + DeltaBiasJ; // bias update
-					n.UpdateBias();
+					n.UpdateBias(LEARN);
 				}
 				for(Node n : hidden){
-					n.UpdateBias();
+					n.UpdateBias(LEARN);
 				}
 			}
 
 			//End running
 			
-			System.out.println("Accuracy: " + accActual/accMax);
-			if(t > 250) break;
+			//System.out.println("Accuracy: " + accActual/accMax);
+			if(t >= 200) break;
 			
 		}
 	}
+	
+	public double GetLEARN(int t){
+		if(LEARN <= 0.0) return 1.0/(double)t;
+		return LEARN;
+	}
+	
+	public void SetLEARN(double l) {LEARN = l;}
 
 	private boolean CheckOutput(NDataPoint x) {
 		boolean doesItHoldUp = true;

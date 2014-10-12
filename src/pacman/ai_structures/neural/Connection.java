@@ -24,9 +24,9 @@ public class Connection {
 		weight = (Neural.RAND.nextDouble()*2)-1; //Random weight between -1 and 1
 	}
 
-	public void UpdateWeight() {
+	public void UpdateWeight(double learn) {
 //		 * (16) Delta-wij = (learn)*ErrorJ*Oi; // weight increment
-		double deltaW = Neural.LEARN*bottom.GetError()*mouth.GetOutput();
+		double deltaW = learn*bottom.GetError()*mouth.GetOutput();
 //		 * (17) wij = wij + Delta-wij ; // weight update
 		weight += deltaW;
 	}

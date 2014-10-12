@@ -56,9 +56,9 @@ public class Node {
 		
 	}
 
-	public void UpdateBias() {
+	public void UpdateBias(double learn) {
 //		 * (19) DeltaBiasJ = (learn)*ErrorJ ; // bias increment
-		double deltaBias = Neural.LEARN*error;
+		double deltaBias = learn*error;
 //		 * (20) BiasJ = BiasJ + DeltaBiasJ; // bias update
 		bias += deltaBias;
 		

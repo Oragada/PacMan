@@ -20,7 +20,7 @@ public class NeuralDDTrainer {
 		//Randomize the data
 		Collections.shuffle(PacManTrainingData);
 		
-		Neural neural = new Neural();
+		Neural neural = new Neural(0.1);
 		neural.TrainNeural(PacManTrainingData, 5);
 		
 
