@@ -2,7 +2,7 @@ package pacman.entries.pacman;
 
 import java.util.ArrayList;
 
-import pacman.ai_structures.data_management.DirectionDetect;
+import pacman.ai_structures.data_management.dir_detect.DirectionDetect;
 import pacman.controllers.Controller;
 import pacman.game.Game;
 import pacman.game.Constants.DM;

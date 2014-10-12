@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import pacman.Executor;
-import pacman.ai_structures.data_management.DDCollectorController;
-import pacman.ai_structures.data_management.DirDetectSaverLoader;
-import pacman.ai_structures.data_management.DirectionDetect;
+import pacman.ai_structures.data_management.dir_detect.DDCollectorController;
+import pacman.ai_structures.data_management.dir_detect.DirDetectSaverLoader;
+import pacman.ai_structures.data_management.dir_detect.DirectionDetect;
 import pacman.controllers.KeyBoardInput;
 import pacman.controllers.examples.Legacy;
 import pacman.game.Constants.MOVE;

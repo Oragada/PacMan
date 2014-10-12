@@ -1,4 +1,4 @@
-package pacman.ai_structures.data_management;
+package pacman.ai_structures.data_management.dir_detect;
 
 import pacman.ai_structures.dataRecording.DataSaverLoader;
 import pacman.ai_structures.dataRecording.DataTuple;

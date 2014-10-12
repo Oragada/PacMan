@@ -3,7 +3,7 @@ package pacman.ai_structures.neural;
 import java.util.ArrayList;
 import java.util.Random;
 
-import pacman.ai_structures.data_management.DirectionDetect;
+import pacman.ai_structures.data_management.dir_detect.DirectionDetect;
 
 public class Neural {
 	

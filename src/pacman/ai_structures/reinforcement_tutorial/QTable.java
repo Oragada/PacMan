@@ -157,7 +157,6 @@ import java.util.Random;
         	float Qsa = table.get(getMapString(prevState))[prevAction];
         	float deltaQSA = learningRate*(reward + maxQa - Qsa);
         	table.get(getMapString(prevState))[prevAction] += deltaQSA;
-        	//TODO: update Qvalue
         }
 
 		/**

@@ -1,6 +1,6 @@
 package pacman.ai_structures.neural;
 
-import pacman.ai_structures.data_management.DirectionDetect;
+import pacman.ai_structures.data_management.dir_detect.DirectionDetect;
 import pacman.controllers.Controller;
 import pacman.game.Constants.MOVE;
 import pacman.game.Game;

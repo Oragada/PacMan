@@ -1,4 +1,4 @@
-package pacman.ai_structures.data_management;
+package pacman.ai_structures.data_management.dir_detect;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,9 +37,18 @@ public class DirectionDetect {
 		
 		
 		int pacPos = game.getPacmanCurrentNodeIndex();
-		MOVE[] m = game.getPossibleMoves(pacPos);
+		MOVE[] pm = game.getPossibleMoves(pacPos);
+		MOVE[] m = new MOVE[]{MOVE.UP,MOVE.DOWN,MOVE.LEFT, MOVE.RIGHT};
 		//boolean junc = game.isJunction(pacPos);
 		for(int i = 0; i<m.length;i++){
+			if(!Contains(pm,m[i])){
+				//TODO update
+				d.pellets.put(m[i], MAX);
+				d.sPellets.put(m[i], MAX);
+				d.enemies.put(m[i], MAX);
+				d.prey.put(m[i], MAX);
+				continue;
+			}
 
 			int nPos = game.getNeighbour(pacPos, m[i]);
 			
@@ -47,11 +56,17 @@ public class DirectionDetect {
 			if(game.getActivePillsIndices().length > 0){
 				d.pellets.put(m[i], Cap(findNearest(nPos, m[i], game.getActivePillsIndices(), game)));
 			}
+			else{
+				d.pellets.put(m[i], Cap(MAX));
+			}
 			
 			
 			//SuperPellets
 			if(game.getActivePowerPillsIndices().length > 0){
 				d.sPellets.put(m[i], Cap(findNearest(nPos, m[i], game.getActivePowerPillsIndices(), game)));
+			}
+			else{
+				d.sPellets.put(m[i], Cap(MAX));
 			}
 			
 			//GHOSTS
@@ -69,7 +84,8 @@ public class DirectionDetect {
 				}
 			}
 			
-			//Prey
+			//Prey & Enemies
+				
 			if(gPrey.size() > 0){
 				int[] preyIs = new int[gPrey.size()];
 				for(int j = 0; j<preyIs.length;j++)
@@ -78,6 +94,9 @@ public class DirectionDetect {
 				}
 				
 				d.prey.put(m[i], Cap(findNearest(nPos, m[i], preyIs, game)));
+			}
+			else{
+				d.prey.put(m[i], Cap(MAX));
 			}
 			
 			
@@ -90,12 +109,24 @@ public class DirectionDetect {
 				
 				d.enemies.put(m[i], Cap(findNearest(nPos, m[i], enemyIs, game)));
 			}
+			else{
+				d.enemies.put(m[i], Cap(MAX));
+			}
 			
 		}
+
+		assert d.enemies.size()+d.prey.size()+d.pellets.size()+d.sPellets.size() == 16;
 		
 		return d;
 	}
 	
+	private static boolean Contains(MOVE[] l, MOVE e) {
+		for(int i = 0; i<l.length; i++){
+			if(l[i] == e) return true;
+		}
+		return false;
+	}
+
 	public static DirectionDetect recrtDD(String dString){
 		DirectionDetect newDD = new DirectionDetect();
 		String[] kv = dString.split(":");
