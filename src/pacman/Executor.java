@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Random;
 
-import pacman.ai_structures.data_management.DDCollectorController;
+import pacman.ai_structures.data_management.dir_detect.DDCollectorController;
+import pacman.ai_structures.data_management.way_detect.WDCollectorController;
 import pacman.controllers.Controller;
 import pacman.controllers.HumanController;
 import pacman.controllers.KeyBoardInput;
@@ -67,7 +68,8 @@ public class Executor
 //		exec.runGameTimed(new NearestPillPacMan(),new AggressiveGhosts(),visual);
 		//exec.runGameTimed(new EvolvedDecisionTree(78,76,5),new StarterGhosts(),visual);
 //		exec.runGameTimed(new HumanController(new KeyBoardInput()),new AggressiveGhosts(),visual);	
-		exec.runGameTimed(new DDCollectorController(new KeyBoardInput()), new Legacy(), visual);
+		exec.runGameTimed(new WDCollectorController(new KeyBoardInput()), new Legacy(), visual);
+		
 		//*/
 		
 		/*
