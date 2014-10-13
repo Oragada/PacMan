@@ -7,8 +7,8 @@ import java.util.Random;        // for generating random numbers
 import java.util.ArrayList;     // arrayLists are more versatile than arrays
 
 import pacman.Executor;
+import pacman.controllers.examples.Legacy;
 import pacman.controllers.examples.StarterGhosts;
-import pacman.entries.pacman.EvolvedDecisionTree;
 
 
 /**
@@ -35,7 +35,12 @@ public class GeneticAlgorithm {
     Random rand;
     
     int optimalFitness;
-    int maxGeneration;
+    int MAX_GEN;
+    int PAIRINGS;
+    double MUTATIONCHANCE;
+	int MUTA_VARI;
+	
+	int currentGen;
 
     // --- functions:
 
@@ -55,8 +60,20 @@ public class GeneticAlgorithm {
         rand = new Random();
         
         optimalFitness = Integer.MAX_VALUE;
-        maxGeneration = 25;
         
+        MAX_GEN = 30;
+        PAIRINGS = POPULATION_SIZE/4;
+        //setPairings();
+        MUTATIONCHANCE = 0.7;
+        MUTA_VARI = POPULATION_SIZE/20;
+        
+    }
+    
+    void setPairings(){
+    	/*PAIRINGS = (int) Math.round(POPULATION_SIZE*(
+    			((double)(currentGen/2)+5)/
+    			(double)(MAX_GEN+5))
+    			/2);*/
     }
     /**
      * For all members of the population, runs a heuristic that evaluates their fitness
@@ -70,8 +87,7 @@ public class GeneticAlgorithm {
         	Gene g = mPopulation.get(i);
         	EvolvedDecisionTree tree = new EvolvedDecisionTree(g.getChromosomeElement(0), g.getChromosomeElement(1), g.getChromosomeElement(2));
             Executor exec = new Executor();
-            g.setFitness((float) exec.runSampling(tree, new StarterGhosts(), 10));
-        	// evaluation of the fitness function for each gene in the population goes HERE
+            g.setFitness((float) exec.runSampling(tree, new Legacy(), 10));
         }
     }
     /**
@@ -81,12 +97,10 @@ public class GeneticAlgorithm {
      * If you want to use mutation, this function is where any mutation chances are rolled and mutation takes place.
      */
     public void produceNextGeneration(){
-        // use one of the offspring techniques suggested in class (also applying any mutations) HERE
     	mPopulation.sort(new Comparator<Gene>(){public int compare(Gene x, Gene y){return  (int) (x.mFitness - y.mFitness);}});
-    	List<Gene> breeders = mPopulation.subList((int)(mPopulation.size()/2), mPopulation.size());
-    	int pairings = (int)(this.POPULATION_SIZE/2/2);
+    	List<Gene> breeders = mPopulation.subList(PAIRINGS*2, mPopulation.size());
     	ArrayList<Gene> totalOffspring = new ArrayList<Gene>();
-    	for(int i = 0; i<pairings; i++){
+    	for(int i = 0; i<PAIRINGS; i++){
     		//get two random breeders
     		int momIndex = rand.nextInt(breeders.size());
     		int dadIndex = momIndex;
@@ -100,11 +114,11 @@ public class GeneticAlgorithm {
     		Gene[] offspring = dad.reproduce(mom);
     		
     		//decide whether mutation happens
-    		if(rand.nextInt(10) >= 7){
-    			offspring[0].mutate();
+    		if(rand.nextDouble() < MUTATIONCHANCE){
+    			offspring[0].mutate(MUTA_VARI);
     		}
-    		if(rand.nextInt(10) >= 7){
-    			offspring[1].mutate();
+    		if(rand.nextDouble() < MUTATIONCHANCE){
+    			offspring[1].mutate(MUTA_VARI);
     		}
     		totalOffspring.add(offspring[0]);
     		totalOffspring.add(offspring[1]);
@@ -132,11 +146,11 @@ public class GeneticAlgorithm {
 
 
     // Genetic Algorithm maxA testing method
-    public static void main( String[] args ){
+    public static void main(String[] args){
         // Initializing the population (we chose 500 genes for the population,
         // but you can play with the population size to try different approaches)
         GeneticAlgorithm population = new GeneticAlgorithm(POPULATION_SIZE);
-        int generationCount = 0;
+        
         // For the sake of this sample, evolution goes on forever.
         // If you wish the evolution to halt (for instance, after a number of
         //   generations is reached or the maximum fitness has been achieved),
@@ -166,15 +180,16 @@ public class GeneticAlgorithm {
                 }
             }
             if(population.size()>0){ avgFitness = avgFitness/population.size(); }
-            String output = "Generation: " + generationCount;
+            String output = "Generation: " + population.currentGen;
             output += "\t AvgFitness: " + avgFitness;
             output += "\t MinFitness: " + minFitness + " (" + worstIndividual +")";
             output += "\t MaxFitness: " + maxFitness + " (" + bestIndividual +")";
             System.out.println(output);
             // produce next generation:
             population.produceNextGeneration();
-            generationCount++;
-            if(population.optimalFitness == maxFitness | generationCount > population.maxGeneration){
+            population.currentGen++;
+            population.setPairings();
+            if(population.optimalFitness == maxFitness | population.currentGen > population.MAX_GEN){
             	System.out.println("Best individual: " + bestIndividual);
             	break;
             }
